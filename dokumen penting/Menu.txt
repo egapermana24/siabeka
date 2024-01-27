@@ -1,0 +1,30 @@
+Level Pengguna :
+- User
+- Admin
+
+Menu-menu SIABEKA :
+
+- Login
+- Registrasi
+- Dashboard
+- Menetapkan Kategori Jabatan dan Unit Kerja
+- Menghitung Waktu Kerja Tersedia
+- Menetapkan Komponen Beban Kerja
+- Menetapkan Norma Waktu Komponen Beban Kerja
+- Menetapkan Standar Beban Kerja
+- Menghitung Standar Tugas Penunjang
+- Menetapkan Kebutuhan Tenaga
+
+Database :
+
+- user (id_user, nama, nim, password)
+- jabatan (id_jabatan, nama_jabatan)
+- unit_kerja (id_unit_kerja, nama_unit_kerja, id_jabatan)
+- waktu_kerja_efektif (
+- komponen_beban_kerja (id_komponen_beban_kerja, uraian_kegiatan, id_jabatan, id_komponen_tugas)
+- komponen_tugas (id_komponen_tugas, komponen_tugas)
+- norma_waktu_komponen_beban_kerja (id_norma_waktu_komponen_beban_kerja, id_jabatan, norma_waktu, id_satuan)
+- satuan (id_satuan, nama_satuan)
+- standar_beban_kerja (id_standar_beban_kerja, id_norma_waktu_komponen_beban_kerja, wke, sbk)
+- standar_tugas_penunjang (id_standar_tugas_penunjang, id_norma_waktu_komponen_beban_kerja, ftp)  
+- kebutuhan_tenaga (id_kebutuhan_tenaga, id_norma_waktu_komponen_beban_kerja, frekuensi_kegiatan, jumlah_beban_kerja)

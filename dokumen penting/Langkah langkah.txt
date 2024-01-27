@@ -1,0 +1,19 @@
+Langkah 3
+Pilih petugas > menampilkan uraian kegiatan
+
+Langkah 4
+isi norma waktu dan satuan pada tiap tiap uraian kegiatan
+
+Langkah 5
+Hitung WKE dan SBK
+
+Langkah 6 
+Hitung FTP dan STP(jika kosong uraian kegiatannya maka isi dengan 1)
+- buat inputan sesuai dengan satuannya
+
+Langkah 7
+Hitung Frekuensi Kegiatan (Jumlah Hasil Kerja), hitung Jumlah Beban Kerja
+Hitung Jumlah Kebutuhan Tenaga Tugas Pokok, Standar tugas penunjang, Total Kebutuhan Tenaga (JKT x STP)
+- buat inputan sesuai dengan satuannya
+
+tombol selanjutnya dibuat agar bisa mengirimkan form
