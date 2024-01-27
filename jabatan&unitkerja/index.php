@@ -36,7 +36,7 @@
     <div class="col-md-6">
       <div class="card text-white bg-dark">
         <div class="card-body">
-          <h3 class="card-title text-white">Unit Kerjamm</h3>
+          <h3 class="card-title text-white">Unit Kerja</h3>
           <p class="card-text">Unit Kerja Rekam Medis (Sub Unit Penyimpanan Rekam Medis)</p>
           <a href="../waktukerjatersedia/" class="btn btn-primary">Mulai Hitung</a>
         </div>
