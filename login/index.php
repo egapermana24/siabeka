@@ -49,22 +49,22 @@
             </div>
             <h2 class="mt-3 text-center">Login</h2>
             <p class="text-center">Silahkan Masukkan Username dan Password untuk Masuk Ke sistem.</p>
-            <form class="mt-4">
+            <form class="mt-4" action="proses_login.php?aksi=login" method="post">
               <div class="row">
                 <div class="col-lg-12">
                   <div class="form-group mb-3">
-                    <label class="form-label text-dark" for="uname">Username</label>
-                    <input class="form-control" id="uname" type="text" placeholder="12345678">
+                    <label class="form-label text-dark" for="username">Username</label>
+                    <input class="form-control" id="username" type="text" name="username" placeholder="mahasiswa">
                   </div>
                 </div>
                 <div class="col-lg-12">
                   <div class="form-group mb-3">
-                    <label class="form-label text-dark" for="pwd">Password</label>
-                    <input class="form-control" id="pwd" type="password" placeholder="********">
+                    <label class="form-label text-dark" for="password">Password</label>
+                    <input class="form-control" id="password" type="password" name="password" placeholder="********">
                   </div>
                 </div>
                 <div class="col-lg-12 text-center">
-                  <a href="../dashboard/" type="submit" class="btn w-100 btn-dark">Login</a>
+                  <button type="submit" class="btn w-100 btn-dark">Login</button>
                 </div>
                 <div class="col-lg-12 text-center mt-5">
                   Belum Punya Akun? <a href="#" class="text-danger">Daftar</a>

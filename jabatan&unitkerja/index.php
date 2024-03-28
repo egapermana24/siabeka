@@ -1,4 +1,9 @@
-<?php include '../template/header.php' ?>
+<?php
+include '../template/header.php';
+include '../database/koneksi.php';
+// terima id untuk menampilkan data yang akan diubah
+$query = mysqli_query($conn, "SELECT * FROM unit_kerja");
+?>
 <!-- ============================================================== -->
 <!-- Bread crumb and right sidebar toggle -->
 <!-- ============================================================== -->
@@ -33,42 +38,25 @@
       <h4 class="mb-0 text-info">Data Kategori Unit Kerja</h4>
       <p class="text-muted mt-0 font-12">Pilih Kategori Unit Kerja yang ingin kamu hitung. Bisa kamu search dibagian kanan atas.</code></p>
     </div>
-    <div class="col-md-6">
-      <div class="card text-white bg-dark">
-        <div class="card-body">
-          <h3 class="card-title text-white">Unit Kerja</h3>
-          <p class="card-text">Unit Kerja Rekam Medis (Sub Unit Penyimpanan Rekam Medis)</p>
-          <a href="../waktukerjatersedia/" class="btn btn-primary">Mulai Hitung</a>
+    <?php
+    while ($data = mysqli_fetch_assoc($query)) {
+    ?>
+      <div class="col-md-6">
+        <div class="card text-white bg-primary">
+          <div class="card-body">
+            <h3 class="card-title text-white">UNIT KERJA</h3>
+            <p class="card-text"><?= $data['nama_unit_kerja']; ?></p>
+            <form action="proses.php" method="post">
+              <input type="hidden" name="id_unit_kerja" value="<?= $data['id_unit_kerja']; ?>">
+              <input type="hidden" name="id_user" value="<?= $id_user; ?>">
+              <button type="submit" class="btn btn-dark">Mulai Hitung</button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card text-white bg-dark">
-        <div class="card-body">
-          <h3 class="card-title text-white">Unit Kerja</h3>
-          <p class="card-text">Unit Kerja Rekam Medis (Sub Unit Penyimpanan Rekam Medis)</p>
-          <a href="../waktukerjatersedia/" class="btn btn-primary">Mulai Hitung</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card text-white bg-dark">
-        <div class="card-body">
-          <h3 class="card-title text-white">Unit Kerja</h3>
-          <p class="card-text">Unit Kerja Rekam Medis (Sub Unit Penyimpanan Rekam Medis)</p>
-          <a href="../waktukerjatersedia/" class="btn btn-primary">Mulai Hitung</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card text-white bg-dark">
-        <div class="card-body">
-          <h3 class="card-title text-white">Unit Kerja</h3>
-          <p class="card-text">Unit Kerja Rekam Medis (Sub Unit Penyimpanan Rekam Medis)</p>
-          <a href="../waktukerjatersedia/" class="btn btn-primary">Mulai Hitung</a>
-        </div>
-      </div>
-    </div>
+    <?php
+    }
+    ?>
   </div>
 </div>
 <?php include '../template/footer.php' ?>

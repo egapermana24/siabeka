@@ -19,6 +19,24 @@
 <!-- ============================================================== -->
 <!-- All Jquery -->
 <!-- ============================================================== -->
+<div id="primary-header-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header modal-colored-header bg-primary">
+        <h4 class="modal-title" id="primary-header-modalLabel">Konfirmasi
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+      </div>
+      <div class="modal-body">
+        <h5 class="mt-0">Apakah Anda Yakin Ingin Keluar Dari Sistem?</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tidak</button>
+        <a type="button" class="btn btn-primary" href="../login/proses_login.php?aksi=logout">Keluar</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <script src="../assets/assets/libs/jquery/dist/jquery.min.js"></script>
 <script src="../assets/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <!-- apps -->

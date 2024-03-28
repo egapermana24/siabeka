@@ -1,11 +1,25 @@
-            <?php include '../template/header.php' ?>
+            <?php include '../template/header.php';
+            date_default_timezone_set('Asia/Jakarta'); // Atur zona waktu sesuai dengan lokasi Anda
+
+            $waktu = date('H'); // Ambil jam saat ini dalam format 24 jam
+
+            if ($waktu >= 0 && $waktu < 12) {
+              $ucapan = 'Selamat Pagi ';
+            } elseif ($waktu >= 12 && $waktu < 18) {
+              $ucapan = 'Selamat Siang ';
+            } elseif ($waktu >= 18 && $waktu < 24) {
+              $ucapan = 'Selamat Sore ';
+            } else {
+              $ucapan = 'Selamat Malam ';
+            }
+            ?>
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
             <div class="page-breadcrumb">
               <div class="row">
                 <div class="col-7 align-self-center">
-                  <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Selamat Sore Naufal!</h3>
+                  <h3 class="page-title text-truncate text-dark font-weight-medium mb-1"> <?= $ucapan,  $nama; ?>!</h3>
                   <div class="d-flex align-items-center">
                     <nav aria-label="breadcrumb">
                       <ol class="breadcrumb m-0 p-0">

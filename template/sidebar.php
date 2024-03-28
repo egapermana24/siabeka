@@ -42,7 +42,7 @@
             <li class="sidebar-item"> <a class="sidebar-link" href="ticket-list.html" aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span class="hide-menu">Profil
                 </span></a>
             </li>
-            <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="../login/" aria-expanded="false"><i data-feather="log-out" class="feather-icon"></i><span class="hide-menu">Logout</span></a></li>
+            <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="#" data-bs-target="#primary-header-modal" data-bs-toggle="modal" aria-expanded="false"><i data-feather="log-out" class="feather-icon"></i><span class="hide-menu">Logout</span></a></li>
             <!-- <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-chat.html" aria-expanded="false"><i data-feather="message-square" class="feather-icon"></i><span class="hide-menu">Chat</span></a></li>
             <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-calendar.html" aria-expanded="false"><i data-feather="calendar" class="feather-icon"></i><span class="hide-menu">Calendar</span></a></li> -->
 

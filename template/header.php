@@ -1,3 +1,18 @@
+<?php
+include '../database/koneksi.php';
+session_start();
+// jika tidak ada session maka diharuskan login dulu
+if (!isset($_SESSION['username'])) {
+  echo "<script>window.location.href='../login/';</script>";
+  die();
+} else {
+  $id_user = $_SESSION['id_user'];
+  $username = $_SESSION['username'];
+  $nama = $_SESSION['nama'];
+  $query = mysqli_query($conn, "SELECT * FROM tb_user WHERE username='$username'");
+  $row = mysqli_fetch_array($query);
+}
+?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -29,12 +44,12 @@
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
-  <div class="preloader">
+  <!-- <div class="preloader">
     <div class="lds-ripple">
       <div class="lds-pos"></div>
       <div class="lds-pos"></div>
     </div>
-  </div>
+  </div> -->
   <!-- ============================================================== -->
   <!-- Main wrapper - style you can find in pages.scss -->
   <!-- ============================================================== -->
