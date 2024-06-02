@@ -17,7 +17,13 @@ include '../database/koneksi.php';
 // }
 
 $query_check = mysqli_query($conn, "
-    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user
+    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND dipilih = 1
+");
+$query_waktu_kerja_check = mysqli_query($conn, "
+  SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND waktu_kerja_efektif_menit != 0 AND dipilih = 1
+");
+$query_norma_check = mysqli_query($conn, "
+    SELECT norma_waktu_komponen.*, waktu_kerja_tersedia.* FROM norma_waktu_komponen INNER JOIN waktu_kerja_tersedia ON norma_waktu_komponen.id_user = waktu_kerja_tersedia.id_user WHERE norma_waktu_komponen.id_user = $id_user AND norma_waktu_komponen.id_unit_kerja = waktu_kerja_tersedia.id_unit_kerja AND waktu_kerja_tersedia.dipilih = 1
 ");
 
 // Cek apakah query berhasil dieksekusi
@@ -30,8 +36,27 @@ if ($query_check) {
 } else {
   echo "Error: " . mysqli_error($conn);
 }
+if ($query_waktu_kerja_check) {
+  if (mysqli_num_rows($query_waktu_kerja_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda harus menetapkan waktu kerja tersedia.");document.location="../waktukerjatersedia/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
+// Cek apakah query berhasil dieksekusi
+if ($query_norma_check) {
+  if (mysqli_num_rows($query_norma_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda Harus Menekan Tombol Simpan dan Selanjutnya");document.location="../komponenbebankerja/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
 
-$query_deskripsi_pokok = "SELECT waktu_kerja_tersedia.*, unit_kerja.*, uraian_kegiatan.*, norma_waktu_komponen.* FROM waktu_kerja_tersedia INNER JOIN uraian_kegiatan ON waktu_kerja_tersedia.id_unit_kerja = uraian_kegiatan.id_unit_kerja INNER JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'pokok' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan";
+$query_deskripsi_pokok = "SELECT waktu_kerja_tersedia.*, unit_kerja.*, uraian_kegiatan.*, norma_waktu_komponen.* FROM waktu_kerja_tersedia INNER JOIN uraian_kegiatan ON waktu_kerja_tersedia.id_unit_kerja = uraian_kegiatan.id_unit_kerja INNER JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'pokok' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND norma_waktu_komponen.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_pokok = mysqli_query($conn, $query_deskripsi_pokok);
 $query_deskripsi_pokok = $result_pokok;
 $cek_pokok = mysqli_num_rows($result_pokok) > 0;
@@ -39,7 +64,7 @@ $cek_pokok = mysqli_num_rows($result_pokok) > 0;
 $query_unit = "SELECT *
     FROM waktu_kerja_tersedia
     JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja
-    WHERE waktu_kerja_tersedia.id_user = '$id_user'";
+    WHERE waktu_kerja_tersedia.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_unit = mysqli_query($conn, $query_unit);
 $data = mysqli_fetch_assoc($result_unit);
 
@@ -79,7 +104,7 @@ if (isset($_POST['frekuensi_kegiatan'])) {
       $updateQuery = "UPDATE norma_waktu_komponen SET frekuensi_kegiatan = '$frekuensi_kegiatan_loop', jumlah_beban_kerja = '$jbk_loop' WHERE id_user = '$id_user' AND id_unit_kerja = '$id_unit_kerja' AND id_uraian_kegiatan = '$id_uraian_kegiatan_loop'";
       if (mysqli_query($conn, $updateQuery)) {
         // echo "Data berhasil diupdate.";
-        echo '<script>document.location="index.php";</script>';
+        echo '<script>document.location="/siabeka/kebutuhantenaga";</script>';
       } else {
         echo "Error updating record: " . mysqli_error($conn);
       }
@@ -114,7 +139,7 @@ if (isset($_POST['frekuensi_kegiatan'])) {
 <!-- ============================================================== -->
 <div class="page-breadcrumb">
   <div class="row">
-    <div class="col-7 align-self-center">
+    <div class="col-12 align-self-center">
       <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Menetapkan Kebutuhan Tenaga</h3>
       <div class="d-flex align-items-center">
         <nav aria-label="breadcrumb">
@@ -132,12 +157,12 @@ if (isset($_POST['frekuensi_kegiatan'])) {
 <!-- ============================================================== -->
 <div class="container-fluid">
   <div class="row">
-    <div class="col-12 mt-4">
+    <div class="col-12">
       <h4 class="mb-0 text-info"><?= $data['nama_unit_kerja']; ?></h4>
       <p class="text-muted mt-0 font-12">Input dengan data yang valid.</code></p>
     </div>
     <div class="col-lg-8">
-      <form class="mt-3" action="" method="post">
+      <form action="" method="post">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Tugas Pokok</h4>
@@ -162,7 +187,7 @@ if (isset($_POST['frekuensi_kegiatan'])) {
                             <div class="col">
                               <div class="form-group">
                                 <small id="satuan" class="form-text text-muted">Frekuensi Kegiatan (Jumlah Hasil Kerja)</small>
-                                <input name="frekuensi_kegiatan[]" type="number" class="form-control" id="satuan" aria-describedby="satuan" placeholder="Ketik disini" value="<?= $list['frekuensi_kegiatan']; ?>">
+                                <input required name="frekuensi_kegiatan[]" type="number" class="form-control" id="satuan" aria-describedby="satuan" placeholder="Ketik disini" value="<?= $list['frekuensi_kegiatan']; ?>">
                                 <small id="satuan" class="form-text text-muted fst-italic">*Berapa <?= $list['satuan']; ?></small>
                               </div>
                             </div>
@@ -209,48 +234,104 @@ if (isset($_POST['frekuensi_kegiatan'])) {
       </form>
     </div>
     <div class="col-lg-4">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Total</h4>
-          <table class="table">
-            <tbody>
-              <tr>
-                <form class="mt-3">
-                  <div class="row">
-                    <div class="col">
-                      <div class="form-group">
-                        <small id="menit" class="form-text text-info">Jumlah Kebutuhan Tenaga Tugas Pokok</small>
-                        <input type="number" class="form-control text-info" id="normaWaktu" aria-describedby="menit" value="<?= $data['jumlah_kebutuhan_tenaga_tugas_pokok']; ?>" placeholder="0" readonly>
+      <div class="row">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Total</h4>
+            <table class="table">
+              <tbody>
+                <tr>
+                  <form class="mt-3">
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <small id="menit" class="form-text text-info">Jumlah Kebutuhan Tenaga Tugas Pokok</small>
+                          <input type="number" class="form-control text-info" id="normaWaktu" aria-describedby="menit" value="<?= $data['jumlah_kebutuhan_tenaga_tugas_pokok']; ?>" placeholder="0" readonly>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <div class="form-group">
-                        <small id="satuan" class="form-text text-info">Standar Tugas Penunjang</small>
-                        <input type="number" class="form-control text-info" id="satuan" aria-describedby="satuan" value="<?= $data['standar_tugas_penunjang']; ?>" placeholder="0" readonly>
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <small id="satuan" class="form-text text-info">Standar Tugas Penunjang</small>
+                          <input type="number" class="form-control text-info" id="satuan" aria-describedby="satuan" value="<?= $data['standar_tugas_penunjang']; ?>" placeholder="0" readonly>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <div class="form-group">
-                        <small id="satuan" class="form-text text-info">Total Kebutuhan Tenaga (JKT x STP)</small>
-                        <input type="number" class="form-control text-info" id="satuan" aria-describedby="satuan" value="<?= $data['total_kebutuhan_tenaga']; ?>" placeholder="0" readonly>
+                    <div class="row">
+                      <div class="col">
+                        <div class="form-group">
+                          <small id="satuan" class="form-text text-info">Total Kebutuhan Tenaga (JKT x STP)</small>
+                          <input type="number" class="form-control text-info" id="satuan" aria-describedby="satuan" value="<?= $data['total_kebutuhan_tenaga']; ?>" placeholder="0" readonly>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </form>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </form>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <!-- <div class="card-footer d-flex align-items-center justify-content-evenly">
-          <button class="btn btn-rounded btn-danger">Reset</button>
-          <button class="btn btn-rounded btn-info">Simpan</button>
-        </div> -->
       </div>
+      <?php
+      if ($data['total_kebutuhan_tenaga'] !== 0 && $data['total_kebutuhan_tenaga'] !== null) :
+      ?>
+        <div class="row">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Keterangan</h4>
+              <!-- tuliskan keterangan yang berisi data diatas menggunakan paragraft -->
+              <p class="card-text">Jumlah Kebutuhan Tenaga Tugas Pokok adalah jumlah kebutuhan tenaga yang dibutuhkan untuk melaksanakan tugas pokok. Hasil perhitungan kamu yaitu <strong><?= $data['jumlah_kebutuhan_tenaga_tugas_pokok']; ?></strong>.</p>
+              <p class="card-text">Standar Tugas Penunjang adalah standar yang digunakan untuk menentukan jumlah kebutuhan tenaga tugas penunjang. Standar yang digunakan adalah <strong><?= $data['standar_tugas_penunjang']; ?></strong>.</p>
+              <p class="card-text">Total Kebutuhan Tenaga adalah hasil perkalian dari Jumlah Kebutuhan Tenaga Tugas Pokok dan Standar Tugas Penunjang. Hasil perhitungan kamu yaitu <strong><?= $data['total_kebutuhan_tenaga']; ?></strong>.</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Hasil</h4>
+              <?php
+
+              function custom_round($number)
+              {
+                if ($number >= 1.0 && $number <= 1.1) {
+                  return 1;
+                } elseif ($number > 1.1 && $number <= 1.9) {
+                  return 2;
+                } elseif ($number >= 2.0 && $number <= 2.2) {
+                  return 2;
+                } elseif ($number > 2.2 && $number <= 2.9) {
+                  return 3;
+                } elseif ($number >= 3.0 && $number <= 3.3) {
+                  return 3;
+                } elseif ($number > 3.3 && $number <= 3.9) {
+                  return 4;
+                } elseif ($number >= 4.0 && $number <= 4.4) {
+                  return 4;
+                } elseif ($number > 4.4 && $number <= 4.9) {
+                  return 5;
+                } elseif ($number >= 5.0 && $number <= 5.5) {
+                  return 5;
+                } elseif ($number > 5.5 && $number <= 5.9) {
+                  return 6;
+                } else {
+                  return round($number); // If the number does not fall into any defined range, round normally
+                }
+              }
+
+
+              $total_kebutuhan_tenaga = $data['total_kebutuhan_tenaga'];
+              $rounded_value = custom_round($total_kebutuhan_tenaga);
+
+              // Output the rounded value
+              echo '<p class="card-text">Dari hasil perhitungan yang dilakukan didapatkan total kebutuhan tenaga kerja yang dibutuhkan yaitu sebanyak <strong>' . $rounded_value . '</strong>.</p>';
+              ?>
+            </div>
+          </div>
+        </div>
+      <?php endif ?>
     </div>
   </div>
   <div class="row">

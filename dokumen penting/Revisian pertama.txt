@@ -1,0 +1,10 @@
+- Menambahkan Tanggal dan waktu
+- Menambahkan kolom lagi agar user bisa menghitung lebih dari 1 unit kerja secara bersamaan
+- Agar saat upload foto auto crop di tengah
+
+dilangkah kedua dikasih keterangan katanya ga, kenapa ada 40 jam sama 37.5, nanti ditanda panah situ keterangan nya ga
+nanti keterangan gini aja ga :
+
+Berdasarkan Keppres No.68/1995 (37,5 jam)
+Berdasarkan UU No.13 Tahun 2003 (40 jam)
+

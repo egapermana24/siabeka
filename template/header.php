@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
   $id_user = $_SESSION['id_user'];
   $username = $_SESSION['username'];
   $nama = $_SESSION['nama'];
-  $query = mysqli_query($conn, "SELECT * FROM tb_user WHERE username='$username'");
+  $query = mysqli_query($conn, "SELECT * FROM tb_user WHERE id_user='$id_user'");
   $row = mysqli_fetch_array($query);
 }
 ?>
@@ -24,14 +24,18 @@ if (!isset($_SESSION['username'])) {
   <meta name="description" content="">
   <meta name="author" content="">
   <!-- Favicon icon -->
-  <link rel="icon" type="image/png" sizes="16x16" href="../assets/assets/images/favicon.png">
+  <link rel="icon" type="image/png" href="../assets/img/logo_poltekkes.png">
   <title>SIABEKA</title>
   <!-- Custom CSS -->
   <link href="../assets/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
   <link href="../assets/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
   <link href="../assets/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+  <!-- <link href="../assets/extra-libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet"> -->
+  <link rel="stylesheet" href="../assets/assets/extra-libs/datatables.net-bs4/css/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="../assets/assets/extra-libs/datatables.net-bs4/css/responsive.dataTables.min.css">
   <!-- Custom CSS -->
   <link href="../assets/dist/css/style.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -44,12 +48,12 @@ if (!isset($_SESSION['username'])) {
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
-  <!-- <div class="preloader">
+  <div class="preloader">
     <div class="lds-ripple">
       <div class="lds-pos"></div>
       <div class="lds-pos"></div>
     </div>
-  </div> -->
+  </div>
   <!-- ============================================================== -->
   <!-- Main wrapper - style you can find in pages.scss -->
   <!-- ============================================================== -->

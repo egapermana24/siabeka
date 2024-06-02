@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <!-- Favicon icon -->
-  <link rel="icon" type="image/png" sizes="16x16" href="../assets/assets/images/favicon.png">
+  <link rel="icon" type="image/png" href="../assets/img/logo_poltekkes.png">
   <title>LOGIN - SIABEKA</title>
   <!-- Custom CSS -->
   <link href="../assets/dist/css/style.min.css" rel="stylesheet">
@@ -48,13 +48,13 @@
               <img src="../assets/assets/images/logo-poltekkes.png" alt="wrapkit" height="70">
             </div>
             <h2 class="mt-3 text-center">Login</h2>
-            <p class="text-center">Silahkan Masukkan Username dan Password untuk Masuk Ke sistem.</p>
+            <p class="text-center">Silahkan Masukkan Username dan Password</p>
             <form class="mt-4" action="proses_login.php?aksi=login" method="post">
               <div class="row">
                 <div class="col-lg-12">
                   <div class="form-group mb-3">
                     <label class="form-label text-dark" for="username">Username</label>
-                    <input class="form-control" id="username" type="text" name="username" placeholder="mahasiswa">
+                    <input class="form-control" id="username" type="text" name="username" placeholder="username">
                   </div>
                 </div>
                 <div class="col-lg-12">
@@ -64,11 +64,11 @@
                   </div>
                 </div>
                 <div class="col-lg-12 text-center">
-                  <button type="submit" class="btn w-100 btn-dark">Login</button>
+                  <button type="submit" class="btn w-100 btn-dark btn-show-alert">Login</button>
                 </div>
-                <div class="col-lg-12 text-center mt-5">
+                <!-- <div class="col-lg-12 text-center mt-5">
                   Belum Punya Akun? <a href="#" class="text-danger">Daftar</a>
-                </div>
+                </div> -->
               </div>
             </form>
           </div>

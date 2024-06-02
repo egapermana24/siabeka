@@ -17,7 +17,13 @@ include '../database/koneksi.php';
 // }
 
 $query_check = mysqli_query($conn, "
-    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user
+    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND dipilih = 1
+");
+$query_waktu_kerja_check = mysqli_query($conn, "
+  SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND waktu_kerja_efektif_menit != 0 AND dipilih = 1
+");
+$query_norma_check = mysqli_query($conn, "
+    SELECT norma_waktu_komponen.*, waktu_kerja_tersedia.* FROM norma_waktu_komponen INNER JOIN waktu_kerja_tersedia ON norma_waktu_komponen.id_user = waktu_kerja_tersedia.id_user WHERE norma_waktu_komponen.id_user = $id_user AND norma_waktu_komponen.id_unit_kerja = waktu_kerja_tersedia.id_unit_kerja AND waktu_kerja_tersedia.dipilih = 1
 ");
 
 // Cek apakah query berhasil dieksekusi
@@ -30,8 +36,27 @@ if ($query_check) {
 } else {
   echo "Error: " . mysqli_error($conn);
 }
+if ($query_waktu_kerja_check) {
+  if (mysqli_num_rows($query_waktu_kerja_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda harus menetapkan waktu kerja tersedia.");document.location="../waktukerjatersedia/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
+// Cek apakah query berhasil dieksekusi
+if ($query_norma_check) {
+  if (mysqli_num_rows($query_norma_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda Harus Menekan Tombol Simpan dan Selanjutnya");document.location="../komponenbebankerja/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
 
-$query_deskripsi_penunjang = "SELECT waktu_kerja_tersedia.*, norma_waktu_komponen.*, uraian_kegiatan.* FROM waktu_kerja_tersedia INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja INNER JOIN uraian_kegiatan ON norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'penunjang' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND uraian_kegiatan.id_unit_kerja = 0";
+$query_deskripsi_penunjang = "SELECT waktu_kerja_tersedia.*, norma_waktu_komponen.*, uraian_kegiatan.* FROM waktu_kerja_tersedia INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja INNER JOIN uraian_kegiatan ON norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'penunjang' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND uraian_kegiatan.id_unit_kerja = 0 AND norma_waktu_komponen.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_penunjang = mysqli_query($conn, $query_deskripsi_penunjang);
 $query_deskripsi_penunjang = $result_penunjang;
 $cek_penunjang = mysqli_num_rows($result_penunjang) > 0;
@@ -39,7 +64,7 @@ $cek_penunjang = mysqli_num_rows($result_penunjang) > 0;
 $query_unit = "SELECT *
     FROM waktu_kerja_tersedia
     JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja
-    WHERE waktu_kerja_tersedia.id_user = '$id_user'";
+    WHERE waktu_kerja_tersedia.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_unit = mysqli_query($conn, $query_unit);
 $data = mysqli_fetch_assoc($result_unit);
 
@@ -81,10 +106,10 @@ if (isset($_POST['qty_tugas_penunjang'])) {
 
     if (mysqli_num_rows($checkResult) > 0) {
       // Jika data sudah ada, lakukan update
-      $updateQuery = "UPDATE norma_waktu_komponen SET qty_tugas_penunjang = '$qty_tugas_penunjang_loop', faktor_tugas_penunjang = '$ftp_loop' WHERE id_user = '$id_user' AND id_unit_kerja = '$id_unit_kerja' AND id_uraian_kegiatan = '$id_uraian_kegiatan_loop'";
+      $updateQuery = "UPDATE norma_waktu_komponen SET qty_tugas_penunjang = '$qty_tugas_penunjang_loop', faktor_tugas_penunjang = '$ftp_loop' WHERE id_user = '$id_user' AND id_unit_kerja = '$id_unit_kerja' AND id_uraian_kegiatan = '$id_uraian_kegiatan_loop' ";
       if (mysqli_query($conn, $updateQuery)) {
         // echo "Data berhasil diupdate.";
-        echo '<script>document.location="index.php";</script>';
+        echo '<script>document.location="/siabeka/standartugaspenunjang/";</script>';
       } else {
         echo "Error updating record: " . mysqli_error($conn);
       }
@@ -117,7 +142,7 @@ if (isset($_POST['qty_tugas_penunjang'])) {
 ?>
 <div class="page-breadcrumb">
   <div class="row">
-    <div class="col-7 align-self-center">
+    <div class="col-12 align-self-center">
       <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Menetapkan Standar Tugas Penunjang</h3>
       <div class="d-flex align-items-center">
         <nav aria-label="breadcrumb">
@@ -128,18 +153,11 @@ if (isset($_POST['qty_tugas_penunjang'])) {
         </nav>
       </div>
     </div>
-    <!-- <div class="col-5 align-self-center">
-      <div class="customize-input float-end">
-        <select class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
-          <option selected disabled hidden>Pilih Kategori Jabatan</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-        </select>
-      </div>
-    </div> -->
+  </div>
+  <div class="row mt-2">
+    <div class="col-12 align-self-center">
+      <p class="page-title text-dark mt-1 font-14">Tugas Penunjang adalah tugas untuk menyelesaikan kegiatan yang tidak terkait langsung dengan tugas pokok dan fungsinya yang dilakukan oleh seluruh jenis SDMK.</p>
+    </div>
   </div>
 </div>
 <!-- ============================================================== -->

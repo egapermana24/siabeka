@@ -17,9 +17,14 @@ include '../database/koneksi.php';
 // }
 
 $query_check = mysqli_query($conn, "
-    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user
+    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND dipilih = 1
 ");
-
+$query_waktu_kerja_check = mysqli_query($conn, "
+  SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND waktu_kerja_efektif_menit != 0 AND dipilih = 1
+");
+$query_norma_check = mysqli_query($conn, "
+    SELECT norma_waktu_komponen.*, waktu_kerja_tersedia.* FROM norma_waktu_komponen INNER JOIN waktu_kerja_tersedia ON norma_waktu_komponen.id_user = waktu_kerja_tersedia.id_user WHERE norma_waktu_komponen.id_user = $id_user AND norma_waktu_komponen.id_unit_kerja = waktu_kerja_tersedia.id_unit_kerja AND waktu_kerja_tersedia.dipilih = 1
+");
 // Cek apakah query berhasil dieksekusi
 if ($query_check) {
   if (mysqli_num_rows($query_check) == 0) {
@@ -30,13 +35,32 @@ if ($query_check) {
 } else {
   echo "Error: " . mysqli_error($conn);
 }
+if ($query_waktu_kerja_check) {
+  if (mysqli_num_rows($query_waktu_kerja_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda harus menetapkan waktu kerja tersedia.");document.location="../waktukerjatersedia/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
+// Cek apakah query berhasil dieksekusi
+if ($query_norma_check) {
+  if (mysqli_num_rows($query_norma_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda Harus Menekan Tombol Simpan dan Selanjutnya");document.location="../komponenbebankerja/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
 
-$query_deskripsi_pokok = "SELECT waktu_kerja_tersedia.*, unit_kerja.*, uraian_kegiatan.*, norma_waktu_komponen.* FROM waktu_kerja_tersedia INNER JOIN uraian_kegiatan ON waktu_kerja_tersedia.id_unit_kerja = uraian_kegiatan.id_unit_kerja INNER JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'pokok' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan";
+$query_deskripsi_pokok = "SELECT waktu_kerja_tersedia.*, unit_kerja.*, uraian_kegiatan.*, norma_waktu_komponen.* FROM waktu_kerja_tersedia INNER JOIN uraian_kegiatan ON waktu_kerja_tersedia.id_unit_kerja = uraian_kegiatan.id_unit_kerja INNER JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'pokok' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND norma_waktu_komponen.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_pokok = mysqli_query($conn, $query_deskripsi_pokok);
 $query_deskripsi_pokok = $result_pokok;
 $cek_pokok = mysqli_num_rows($result_pokok) > 0;
 
-$query_deskripsi_penunjang = "SELECT waktu_kerja_tersedia.*, norma_waktu_komponen.*, uraian_kegiatan.* FROM waktu_kerja_tersedia INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja INNER JOIN uraian_kegiatan ON norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'penunjang' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND uraian_kegiatan.id_unit_kerja = 0";
+$query_deskripsi_penunjang = "SELECT waktu_kerja_tersedia.*, norma_waktu_komponen.*, uraian_kegiatan.* FROM waktu_kerja_tersedia INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja INNER JOIN uraian_kegiatan ON norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'penunjang' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND uraian_kegiatan.id_unit_kerja = 0 AND norma_waktu_komponen.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_penunjang = mysqli_query($conn, $query_deskripsi_penunjang);
 $query_deskripsi_penunjang = $result_penunjang;
 $cek_penunjang = mysqli_num_rows($result_penunjang) > 0;
@@ -44,14 +68,14 @@ $cek_penunjang = mysqli_num_rows($result_penunjang) > 0;
 $query_unit = "SELECT *
     FROM waktu_kerja_tersedia
     JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja
-    WHERE waktu_kerja_tersedia.id_user = '$id_user'";
+    WHERE waktu_kerja_tersedia.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_unit = mysqli_query($conn, $query_unit);
 $data = mysqli_fetch_assoc($result_unit);
 ?>
 
 <div class="page-breadcrumb">
   <div class="row">
-    <div class="col-7 align-self-center">
+    <div class="col-12 align-self-center">
       <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Menetapkan Standar Beban Kerja</h3>
       <div class="d-flex align-items-center">
         <nav aria-label="breadcrumb">
@@ -61,6 +85,11 @@ $data = mysqli_fetch_assoc($result_unit);
           </ol>
         </nav>
       </div>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-12 align-self-center">
+      <p class="page-title text-dark mt-1 font-14">Standar Beban Kerja adalah banyaknya kerja (dalam satu kegiatan pelayanan utama) yang dapat dilakukan oleh seorang tenaga kesehatan dalam setahun.</p>
     </div>
   </div>
 </div>

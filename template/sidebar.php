@@ -7,39 +7,70 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
           <ul id="sidebarnav">
-            <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="../dashboard/" aria-expanded="false"><i data-feather="home" class="feather-icon"></i><span class="hide-menu">Dashboard</span></a></li>
+            <?php
+            if ($row['level'] == 'user') {
+            ?>
+              <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="../dashboard/" aria-expanded="false"><i data-feather="home" class="feather-icon"></i><span class="hide-menu">Dashboard</span></a></li>
+            <?php
+            } else {
+            ?>
+              <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="../dashadmin/" aria-expanded="false"><i data-feather="home" class="feather-icon"></i><span class="hide-menu">Dashboard</span></a></li>
+            <?php
+            }
+            ?>
             <li class="list-divider"></li>
             <li class="nav-small-cap"><span class="hide-menu">Applications</span></li>
 
-            <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span class="hide-menu">Perhitungan </span></a>
-              <ul aria-expanded="false" class="collapse  first-level base-level-line">
-                <li class="sidebar-item"><a href="../jabatan&unitkerja/" class="sidebar-link"><span class="hide-menu"> Kategori Jabatan dan Unit Kerja
-                    </span></a>
-                </li>
-                <li class="sidebar-item"><a href="../waktukerjatersedia/" class="sidebar-link"><span class="hide-menu"> Waktu Kerja Tersedia
-                    </span></a>
-                </li>
-                <li class="sidebar-item"><a href="../komponenbebankerja/" class="sidebar-link"><span class="hide-menu"> Komponen Beban Kerja
-                    </span></a>
-                </li>
-                <li class="sidebar-item"><a href="../normawaktukomponen/" class="sidebar-link"><span class="hide-menu"> Norma Waktu Komponen Beban Kerja
-                    </span></a>
-                </li>
-                <li class="sidebar-item"><a href="../standarbebankerja/" class="sidebar-link"><span class="hide-menu"> Standar Beban Kerja
-                    </span></a>
-                </li>
-                <li class="sidebar-item"><a href="../standartugaspenunjang/" class="sidebar-link"><span class="hide-menu"> Standar Tugas Penunjang
-                    </span></a>
-                </li>
-                <li class="sidebar-item"><a href="../kebutuhantenaga/" class="sidebar-link"><span class="hide-menu"> Kebutuhan Tenaga
-                    </span></a>
-                </li>
-              </ul>
-            </li>
-            <li class="sidebar-item"> <a class="sidebar-link" href="ticket-list.html" aria-expanded="false"><i data-feather="users" class="feather-icon"></i><span class="hide-menu">Data Mahasiswa
-                </span></a>
-            </li>
-            <li class="sidebar-item"> <a class="sidebar-link" href="ticket-list.html" aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span class="hide-menu">Profil
+            <?php
+            if ($row['level'] == 'user') {
+            ?>
+              <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span class="hide-menu">Perhitungan </span></a>
+                <ul aria-expanded="false" class="collapse  first-level base-level-line">
+                  <li class="sidebar-item"><a href="../jabatan&unitkerja/" class="sidebar-link"><span class="hide-menu"> Kategori Jabatan dan Unit Kerja
+                      </span></a>
+                  </li>
+                  <li class="sidebar-item"><a href="../waktukerjatersedia/" class="sidebar-link"><span class="hide-menu"> Waktu Kerja Tersedia
+                      </span></a>
+                  </li>
+                  <li class="sidebar-item"><a href="../komponenbebankerja/" class="sidebar-link"><span class="hide-menu"> Komponen Beban Kerja
+                      </span></a>
+                  </li>
+                  <li class="sidebar-item"><a href="../normawaktukomponen/" class="sidebar-link"><span class="hide-menu"> Norma Waktu Komponen Beban Kerja
+                      </span></a>
+                  </li>
+                  <li class="sidebar-item"><a href="../standarbebankerja/" class="sidebar-link"><span class="hide-menu"> Standar Beban Kerja
+                      </span></a>
+                  </li>
+                  <li class="sidebar-item"><a href="../standartugaspenunjang/" class="sidebar-link"><span class="hide-menu"> Standar Tugas Penunjang
+                      </span></a>
+                  </li>
+                  <li class="sidebar-item"><a href="../kebutuhantenaga/" class="sidebar-link"><span class="hide-menu"> Kebutuhan Tenaga
+                      </span></a>
+                  </li>
+                </ul>
+              </li>
+              <li class="sidebar-item"> <a class="sidebar-link" href="../dataunitkerjauser/" aria-expanded="false"><i data-feather="percent" class="feather-icon"></i><span class="hide-menu">Riwayat Perhitungan
+                  </span></a>
+              </li>
+            <?php
+            }
+            ?>
+            <?php
+            if ($row['level'] == 'admin') {
+            ?>
+              <li class="sidebar-item"> <a class="sidebar-link" href="../semuapengguna/" aria-expanded="false"><i data-feather="users" class="feather-icon"></i><span class="hide-menu">Data Mahasiswa
+                  </span></a>
+              </li>
+              <li class="sidebar-item"> <a class="sidebar-link" href="../dataunitkerja/" aria-expanded="false"><i data-feather="briefcase" class="feather-icon"></i><span class="hide-menu">Data Unit Kerja
+                  </span></a>
+              </li>
+              <li class="sidebar-item"> <a class="sidebar-link" href="../datauraiankegiatan/" aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span class="hide-menu">Data Uraian Kegiatan
+                  </span></a>
+              </li>
+            <?php
+            }
+            ?>
+            <li class="sidebar-item"> <a class="sidebar-link" href="../profil/" aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span class="hide-menu">Profil
                 </span></a>
             </li>
             <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="#" data-bs-target="#primary-header-modal" data-bs-toggle="modal" aria-expanded="false"><i data-feather="log-out" class="feather-icon"></i><span class="hide-menu">Logout</span></a></li>

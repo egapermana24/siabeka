@@ -3,7 +3,7 @@ include '../template/header.php';
 include '../database/koneksi.php';
 
 $query_check = mysqli_query($conn, "
-    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user
+    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND dipilih = 1
 ");
 
 // Cek apakah query berhasil dieksekusi
@@ -21,7 +21,7 @@ $query = mysqli_query($conn, "
     SELECT *
     FROM waktu_kerja_tersedia
     JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja
-    WHERE waktu_kerja_tersedia.id_user = $id_user
+    WHERE waktu_kerja_tersedia.id_user = $id_user AND waktu_kerja_tersedia.dipilih = 1
 ");
 $data = mysqli_fetch_assoc($query);
 
@@ -63,7 +63,7 @@ if (isset($_POST['jam_kerja'])) {
                       hari_kerja_efektif = '$hari_kerja_efektif',
                       waktu_kerja_efektif_jam = '$waktu_kerja_efektif_jam_def',
                       waktu_kerja_efektif_menit = '$waktu_kerja_efektif_menit_def'
-                  WHERE id_user = $id_user";
+                  WHERE id_user = $id_user AND dipilih = 1";
     if ($conn->query($sql_update) === TRUE) {
       echo '<script>document.location="../waktukerjatersedia/";</script>';
     } else {
@@ -101,8 +101,8 @@ if (isset($_POST['jam_kerja'])) {
 <!-- ============================================================== -->
 <div class="page-breadcrumb">
   <div class="row">
-    <div class="col-7 align-self-center">
-      <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Menetapkan Waktu Kerja Tersedia</h3>
+    <div class="col-12 align-self-center">
+      <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Menetapkan Waktu Kerja Efektif (Tersedia) </h3>
       <div class="d-flex align-items-center">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb m-0 p-0">
@@ -112,12 +112,10 @@ if (isset($_POST['jam_kerja'])) {
         </nav>
       </div>
     </div>
-    <div class="col-5">
-      <div class="customize-input float-end">
-        <form>
-          <input class="form-control custom-shadow custom-radius border-0 bg-white custom-lh" type="search" placeholder="Search" aria-label="Search">
-        </form>
-      </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-12 align-self-center">
+      <p class="page-title text-dark mt-1 font-14">Waktu yang dipergunakan oleh SDMK untuk melaksanakan tugas dan kegiatannya dalam kurun waktu satu tahun, hitung jumlah hari kerja setahun perkirakan jumlah libur umum, cuti tahunan dan ketidakhadiran dalam setahun, kurangkan hari kerja setahun dengan jumlah hari masuk kerja. <br> <i>Sumber: kalender, kebijakan tentang hari dan jam kerja</i></p>
     </div>
   </div>
 </div>
@@ -127,7 +125,7 @@ if (isset($_POST['jam_kerja'])) {
 <div class="container-fluid">
   <form action="" method="post">
     <div class="row">
-      <div class="col-12 mt-4">
+      <div class="col-12 mt-1">
         <h4 class="mb-0 text-info"><?= $data['nama_unit_kerja']; ?></h4>
         <p class="text-muted mt-0 font-12">Silahkan dihitung berdasarkan kebutuhan.</code></p>
       </div>
@@ -139,7 +137,18 @@ if (isset($_POST['jam_kerja'])) {
               <table class="table">
                 <tbody>
                   <tr>
-                    <td>Jam Kerja Formal Per Minggu</td>
+                    <td>Jam Kerja Formal Per Minggu
+                      <br>
+                      <br>
+                      <!-- menambahkan keterangan -->
+                      <small id="ket" class="text-muted">Keterangan:</small>
+                      <br>
+                      <small id="ket1" class="text-muted font-12">Berdasarkan Keppres No.68/1995 (37,5 jam)</small>
+                      <br>
+                      <small id="ket2" class="text-muted font-12 ">Berdasarkan UU No.13 Tahun 2003 (40 jam)</small>
+
+
+                    </td>
                     <td>
                       <div class="customize-input">
                         <select required name="jam_kerja" class="custom-select custom-select-set form-control bg-white border-1 custom-shadow custom-radius">
@@ -155,6 +164,7 @@ if (isset($_POST['jam_kerja'])) {
                           <?php endif ?>
                         </select>
                       </div>
+                      <br>
 
                     </td>
                   </tr>

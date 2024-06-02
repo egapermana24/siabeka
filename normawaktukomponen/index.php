@@ -2,7 +2,13 @@
 include '../database/koneksi.php';
 
 $query_check = mysqli_query($conn, "
-    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user
+    SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND dipilih = 1
+");
+$query_waktu_kerja_check = mysqli_query($conn, "
+  SELECT * FROM waktu_kerja_tersedia WHERE id_user = $id_user AND waktu_kerja_efektif_menit != 0 AND dipilih = 1
+");
+$query_norma_check = mysqli_query($conn, "
+    SELECT norma_waktu_komponen.*, waktu_kerja_tersedia.* FROM norma_waktu_komponen INNER JOIN waktu_kerja_tersedia ON norma_waktu_komponen.id_user = waktu_kerja_tersedia.id_user WHERE norma_waktu_komponen.id_user = $id_user AND norma_waktu_komponen.id_unit_kerja = waktu_kerja_tersedia.id_unit_kerja AND waktu_kerja_tersedia.dipilih = 1
 ");
 
 // Cek apakah query berhasil dieksekusi
@@ -15,13 +21,32 @@ if ($query_check) {
 } else {
   echo "Error: " . mysqli_error($conn);
 }
+if ($query_waktu_kerja_check) {
+  if (mysqli_num_rows($query_waktu_kerja_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda harus menetapkan waktu kerja tersedia.");document.location="../waktukerjatersedia/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
+// Cek apakah query berhasil dieksekusi
+if ($query_norma_check) {
+  if (mysqli_num_rows($query_norma_check) == 0) {
+    // Jika id_user belum ada di tabel waktu_kerja_tersedia, kembalikan ke halaman sebelumnya
+    echo '<script>alert("Anda Harus Menekan Tombol Simpan dan Selanjutnya");document.location="../komponenbebankerja/";</script>';
+    exit; // Hentikan eksekusi script selanjutnya
+  }
+} else {
+  echo "Error: " . mysqli_error($conn);
+}
 
-$query_deskripsi_pokok = "SELECT waktu_kerja_tersedia.*, unit_kerja.*, uraian_kegiatan.*, norma_waktu_komponen.* FROM waktu_kerja_tersedia INNER JOIN uraian_kegiatan ON waktu_kerja_tersedia.id_unit_kerja = uraian_kegiatan.id_unit_kerja INNER JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'pokok' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan";
+$query_deskripsi_pokok = "SELECT waktu_kerja_tersedia.*, unit_kerja.*, uraian_kegiatan.*, norma_waktu_komponen.* FROM waktu_kerja_tersedia INNER JOIN uraian_kegiatan ON waktu_kerja_tersedia.id_unit_kerja = uraian_kegiatan.id_unit_kerja INNER JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'pokok' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND norma_waktu_komponen.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_pokok = mysqli_query($conn, $query_deskripsi_pokok);
 $query_deskripsi_pokok = $result_pokok;
 $cek_pokok = mysqli_num_rows($result_pokok) > 0;
 
-$query_deskripsi_penunjang = "SELECT waktu_kerja_tersedia.*, norma_waktu_komponen.*, uraian_kegiatan.* FROM waktu_kerja_tersedia INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja INNER JOIN uraian_kegiatan ON norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'penunjang' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND uraian_kegiatan.id_unit_kerja = 0";
+$query_deskripsi_penunjang = "SELECT waktu_kerja_tersedia.*, norma_waktu_komponen.*, uraian_kegiatan.* FROM waktu_kerja_tersedia INNER JOIN norma_waktu_komponen ON waktu_kerja_tersedia.id_unit_kerja = norma_waktu_komponen.id_unit_kerja INNER JOIN uraian_kegiatan ON norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan WHERE waktu_kerja_tersedia.id_user = '$id_user' AND uraian_kegiatan.jenis_tugas = 'penunjang' AND norma_waktu_komponen.id_uraian_kegiatan = uraian_kegiatan.id_uraian_kegiatan AND uraian_kegiatan.id_unit_kerja = 0 AND norma_waktu_komponen.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_penunjang = mysqli_query($conn, $query_deskripsi_penunjang);
 $query_deskripsi_penunjang = $result_penunjang;
 $cek_penunjang = mysqli_num_rows($result_penunjang) > 0;
@@ -29,7 +54,7 @@ $cek_penunjang = mysqli_num_rows($result_penunjang) > 0;
 $query_unit = "SELECT *
     FROM waktu_kerja_tersedia
     JOIN unit_kerja ON waktu_kerja_tersedia.id_unit_kerja = unit_kerja.id_unit_kerja
-    WHERE waktu_kerja_tersedia.id_user = '$id_user'";
+    WHERE waktu_kerja_tersedia.id_user = '$id_user' AND waktu_kerja_tersedia.dipilih = 1";
 $result_unit = mysqli_query($conn, $query_unit);
 $data = mysqli_fetch_assoc($result_unit);
 
@@ -37,7 +62,7 @@ $data = mysqli_fetch_assoc($result_unit);
 ?>
 <div class="page-breadcrumb">
   <div class="row">
-    <div class="col-7 align-self-center">
+    <div class="col-12 align-self-center">
       <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">Menetapkan Norma Waktu Komponen Beban Kerja</h3>
       <div class="d-flex align-items-center">
         <nav aria-label="breadcrumb">
@@ -48,18 +73,11 @@ $data = mysqli_fetch_assoc($result_unit);
         </nav>
       </div>
     </div>
-    <!-- <div class="col-5 align-self-center">
-      <div class="customize-input float-end">
-        <select class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
-          <option selected disabled hidden>Pilih Kategori Jabatan</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-          <option value="1">Petugas Filing</option>
-        </select>
-      </div>
-    </div> -->
+  </div>
+  <div class="row mt-2">
+    <div class="col-12 align-self-center">
+      <p class="page-title text-dark mt-1 font-14">Norma waktu adalah rata-rata waktu yang dibutuhkan oleh seorang SDMK yang terdidik, terampil, terlatih dan berdedikasi untuk melaksanakan suatu kegiatan secara normal sesuai dengan standar pelayanan yang berlaku di fasyankes bersangkutan.</p>
+    </div>
   </div>
 </div>
 <!-- ============================================================== -->
@@ -67,6 +85,12 @@ $data = mysqli_fetch_assoc($result_unit);
 <!-- ============================================================== -->
 <div class="container-fluid">
   <div class="row">
+    <div class="col-12">
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Perhatian - </strong> Harap mengisi Tugas Pokok terlebih dahulu sampai selesai dan klik simpan, lalu bisa dilanjutkan ke Tugas Penunjang!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
     <div class="col-12 mt-4">
       <h4 class="mb-0 text-info"><?= $data['nama_unit_kerja']; ?></h4>
       <p class="text-muted mt-0 font-12">Harap di cek uraian kegiatannya apakah sudah sesuai.</code></p>
@@ -124,7 +148,7 @@ $data = mysqli_fetch_assoc($result_unit);
       </form>
     </div>
     <div class="card-footer d-flex align-items-center justify-content-evenly">
-      <button class="btn btn-rounded btn-danger">Reset</button>
+      <button type="reset" class="btn btn-rounded btn-danger">Reset</button>
       <button class="btn btn-rounded btn-info">Simpan</button>
     </div>
   </div>
@@ -152,7 +176,7 @@ $data = mysqli_fetch_assoc($result_unit);
                             <input type="hidden" name="id_unit_kerja" value="<?= $data['id_unit_kerja']; ?>">
                             <input type="hidden" name="waktu_kerja_efektif_menit" value="<?= $data['waktu_kerja_efektif_menit']; ?>">
                             <input name="id_uraian_kegiatan[]" type="hidden" value="<?= $list['id_uraian_kegiatan']; ?>">
-                            <input name="norma_waktu[]" type="text" class="form-control" id="normaWaktu" aria-describedby="menit" placeholder="Menit" required value="<?= $list['norma_waktu']; ?>">
+                            <input name="norma_waktu[]" type="number" min="1" class="form-control" id="normaWaktu" aria-describedby="menit" placeholder="Menit" required value="<?= $list['norma_waktu']; ?>">
                             <small id="menit" class="form-text text-muted">Norma Waktu (Menit)</small>
                           </div>
                         </div>
@@ -181,7 +205,7 @@ $data = mysqli_fetch_assoc($result_unit);
       </div>
       <!-- buatkan button simpan dan reset -->
       <div class="card-footer d-flex align-items-center justify-content-evenly">
-        <button class="btn btn-rounded btn-danger">Reset</button>
+        <button type="reset" class="btn btn-rounded btn-danger">Reset</button>
         <button class="btn btn-rounded btn-info">Simpan</button>
       </div>
     </div>

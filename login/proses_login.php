@@ -1,5 +1,6 @@
 <?php
 include "../database/koneksi.php";
+date_default_timezone_set('Asia/Jakarta'); // Atur zona waktu sesuai dengan lokasi Anda
 
 $aksi = $_GET['aksi'];
 if ($aksi == "login") {
@@ -16,19 +17,29 @@ if ($aksi == "login") {
   $nama = $row['nama'];
   $id_user = $row['id_user'];
   $level = $row['level'];
+  $foto = $row['foto'];
 
   $hashedPassword = $row['password']; // Password di-hash yang ada di database
 
   if (password_verify($password, $hashedPassword)) {
     $cek = mysqli_num_rows($query);
     if ($cek > 0) {
+      // input id_user dan tanggal saat login ke tabel login
+      $tgl_login = date('Y-m-d H:i:s');
+      mysqli_query($conn, "INSERT INTO login (id_user, tgl_login) VALUES ('$id_user', '$tgl_login')");
+
       session_start();
       $_SESSION['id_user'] = $id_user;
       $_SESSION['username'] = $username;
       $_SESSION['nama'] = $nama;
       $_SESSION['level'] = $level;
+      $_SESSION['foto'] = $foto;
       // redirect tanpa alert
-      header("Location: ../dashboard/");
+      if ($level == "admin") {
+        header("Location: ../dashadmin/");
+      } else {
+        header("Location: ../dashboard/");
+      }
     } else {
       echo "<script language='JavaScript'>
       alert('Username atau Password Anda Salah!');
